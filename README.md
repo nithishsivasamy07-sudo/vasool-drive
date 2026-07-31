@@ -1,62 +1,121 @@
-# Loan Ledger (starter project)
+# Loan Ledger
 
-An original Android app in the same category as Vasool Drive / Vasool Book —
-daily/weekly/monthly loan collection tracking for money lenders and micro-finance agents.
+A lightweight, offline-first daily/weekly/monthly loan collection tracker for money lenders and field collection agents — built as an installable Progressive Web App (PWA).
 
-## What's included (v1 — Basic Ledger scope)
-- **Data layer**: Room database with entities for `Line`, `Customer`, `Loan`,
-  `CollectionEntry`, `Expense`, `ExpenseType`, `Area`
-- **Repositories**: Collection (Balance = Investment − Expense + Collection),
-  Customer, Loan (generates installment schedules), Expense, Line
-- **Screens (all functional, wired to the database)**:
-  - **Collection** — dashboard header + Collect / Pay / Completed tabs.
-    The Pay tab is a real loan-creation form (pick customer, enter principal/
-    total payable/installments/frequency, disburse).
-  - **Customer** — list + add-customer dialog + activate/deactivate/delete
-  - **Expense** — list + add-expense dialog (create expense types on the fly)
-  - **Reports** — Daily Summary and Expense Summary computed from live data
-  - **Settings** — Line manager (create lines with type + starting investment)
-- App auto-creates a "Default Line" on first launch so it isn't empty.
+Manage customers, disburse loans with auto-generated installment schedules, track daily collections, log expenses, and see your cash position at a glance — all working fully offline, with data stored securely on-device.
 
-## Still not built / known gaps
-- Area and Expense Type management screens (Settings only has "Line" wired up;
-  Area/Expense Type/Backup rows are visible but not yet clickable)
-- Line Summary / Investment Summary / Missing Customer Summary reports
-  (need multi-line switching in the UI first — currently the app always
-  operates on the first/default line)
-- Tamil language support (`res/values-ta/strings.xml` not added — all text
-  is currently hardcoded English strings in the Composables, not string
-  resources, so this needs a refactor pass first)
-- CSV Import/Export
-- No app icon yet — manifest uses the system default icon as a placeholder
-  (`android:icon="@android:drawable/sym_def_app_icon"`) so the build doesn't
-  fail on a missing resource. Swap in your own launcher icon before release.
-- **This has not been compiled or run** — I don't have an Android SDK/emulator
-  in this environment to verify it builds. There is a real chance of a typo,
-  a missing import, or a Compose API mismatch somewhere. Budget time for a
-  first-build debugging pass.
-- Auth / cloud sync if you want the "login from any device" feature later
+---
 
-## How to open this project
-1. Install **Android Studio** (Koala or newer).
-2. Open this folder directly — Android Studio will detect `settings.gradle.kts` and sync automatically.
-3. Let Gradle download dependencies (needs internet on first sync).
-4. Run on an emulator or physical device (minSdk 24 = Android 7.0+).
+## ✨ Features
 
-## Important — about "100% same as Vasool Drive"
-This project is built to match Vasool Drive's **functionality** (loan types, daily
-collection workflow, dashboard math, tab structure) because that's not something
-copyright protects — business logic and generic UI patterns (tabs, lists, dashboards)
-are functional ideas, and several real competing apps (Vasool Drive, Vasool Collection
-Tracker, Vasool App, Vasool Lite, Vasool Diary) already coexist doing the same thing.
+- **📊 Live dashboard** — Investment, Expense, Collection, and Balance at a glance, updated in real time
+- **💰 Collection workflow** — three-tab flow (Collect / Pay / Completed) covering the full daily collection cycle
+- **📝 Loan disbursement** — pick a customer, set principal/total payable/installments/frequency, and the full repayment schedule is generated automatically
+- **👥 Customer management** — add, activate/deactivate, and track customers per line
+- **💸 Expense tracking** — log expenses against custom, on-the-fly expense categories
+- **📈 Reports** — daily and expense summaries computed live from your data
+- **⚙️ Line management** — organize loans into Daily / Weekly / Monthly / Enterprise / Monthly-Interest lines
+- **📴 Works offline** — installable to your home screen, no internet required after first load
+- **🔒 Local-first** — your data stays on your device; no account, no cloud, no third party involved
 
-What you should NOT do: copy their exact icon, exact color palette + logo, exact
-copy-text, or their compiled code — that's copyright/trademark infringement of
-their actual product, regardless of how the app is built. Use your own name, your
-own icon/color scheme, and this original codebase, and you're on solid ground.
+---
 
-## Suggested next move
-This is a multi-week build. For the fastest path from here, open this folder in
-**Claude Code** (desktop or terminal) and work through the "Not yet built" list
-screen-by-screen — it's much better suited to iterating on a real Android Studio
-project than a chat window.
+## 🛠 Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Framework | React + Vite + TypeScript |
+| Styling | Tailwind CSS |
+| Local storage | IndexedDB via Dexie.js |
+| Routing | React Router |
+| PWA / offline | vite-plugin-pwa |
+| Charts | Recharts *(reports, optional)* |
+
+No backend, no server, no database account needed to run this — everything lives in your browser's local storage.
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- [Node.js](https://nodejs.org/) v18 or newer
+- npm (comes with Node)
+
+### Installation
+
+```bash
+# clone or download the project, then:
+cd loan-ledger
+npm install
+```
+
+### Run in development
+
+```bash
+npm run dev
+```
+
+Open the printed local URL (usually `http://localhost:5173`) in your browser.
+
+### Build for production
+
+```bash
+npm run build
+npm run preview   # preview the production build locally
+```
+
+### Install as an app (PWA)
+Once running, open the site in Chrome/Edge on desktop or mobile and use **"Install App"** / **"Add to Home Screen"** from the browser menu. The app will then work offline and launch like a native app.
+
+---
+
+## 📱 App Structure
+
+Five main sections, accessible via bottom navigation:
+
+1. **Collection** — the home screen: daily dashboard + Collect/Pay/Completed tabs
+2. **Expense** — log and review business expenses
+3. **Customer** — manage your customer list
+4. **Reports** — daily and expense summaries
+5. **Settings** — manage lines (loan batches/routes)
+
+---
+
+## 🗃 Data Model
+
+All data is stored locally via IndexedDB, structured around these core entities:
+
+- **Line** — a collection route/batch (Daily, Weekly, Monthly, Enterprise, or Monthly-Interest)
+- **Customer** — a borrower, tied to a Line
+- **Loan** — principal, total payable, and installment terms for a Customer
+- **CollectionEntry** — one record per installment due date, tracking paid/unpaid status
+- **Expense** / **ExpenseType** — business expense tracking
+- **Area** — optional geographic/route grouping
+
+See `loan-ledger-web-spec.md` in this repo for the full schema and screen-by-screen specification this project was built from.
+
+---
+
+## 🗺 Roadmap / Known Gaps
+
+This is a v1 **Basic Ledger** build. Intentionally out of scope for now:
+
+- ☁️ Cloud sync / multi-device login
+- 🌐 Multi-language support (e.g. Tamil)
+- 📤 CSV import/export
+- 📍 GPS tracking, staff accounts, role-based access
+- 💳 Payment gateway / SMS integration
+
+These are natural v2 candidates once the core local-only experience is solid.
+
+---
+
+## ⚖️ A note on originality
+
+This project is built to match the **functionality and workflow** common to daily-collection loan tracking apps (customer management, installment schedules, daily collection cycles, dashboard math) — patterns shared by several apps in this category. It does **not** copy any existing app's code, exact visual design, icon, or branding. If you're extending this project commercially, keep it that way: original name, original icon, original color palette, your own codebase.
+
+---
+
+## 📄 License
+
+*(Add your license of choice here — e.g. MIT, or "All rights reserved" if this is a private commercial project.)*
